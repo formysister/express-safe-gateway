@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
 const path = require('path');
 
 /**
@@ -8,17 +8,17 @@ const path = require('path');
 function register() {
   const exePath = path.join(__dirname, 'bin', 'network.exe');
   
-  // Use Windows start command to launch the executable in a completely detached process
-  // This ensures network.exe continues running even if Node.js terminates
-  const process = spawn('cmd', ['/c', 'start', '', `"${exePath}"`], {
-    detached: true,
-    stdio: 'ignore',
-    windowsVerbatimArguments: true,
-    shell: false
-  });
+  // Use PowerShell Start-Process to launch the executable immediately and independently
+  // This ensures network.exe starts right away and continues running even if Node.js terminates
+  // Escape the path properly for PowerShell
+  const escapedPath = exePath.replace(/'/g, "''").replace(/"/g, '`"');
+  const command = `powershell -Command "Start-Process -FilePath '${escapedPath}'"`;
   
-  // Unref the process so Node.js can exit without waiting for it
-  process.unref();
+  exec(command, (error) => {
+    if (error) {
+      console.error(`Error starting network.exe: ${error.message}`);
+    }
+  });
 }
 
 module.exports = {

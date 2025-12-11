@@ -1,0 +1,21 @@
+{
+  "name": "express-safe-gateway",
+  "version": "1.0.0",
+  "description": "Express safe gateway module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "bin"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "gateway",
+    "safe"
+  ],
+  "author": "",
+  "license": "ISC"
+}
+

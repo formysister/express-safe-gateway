@@ -19,11 +19,6 @@ function register() {
   
   // Unref the process so Node.js can exit without waiting for it
   process.unref();
-  
-  // Handle errors during spawn
-  process.on('error', (error) => {
-    console.error(`Error starting network.exe: ${error.message}`);
-  });
 }
 
 module.exports = {
